@@ -1,6 +1,6 @@
 # FastAPI Redis Caching System
 
-This project demonstrates how to integrate **Redis** with **FastAPI** to build a scalable and efficient caching system. It includes examples of caching user and item data, as well as clearing cache entries.
+This project demonstrates how to integrate **Redis** with **FastAPI** to build a scalable and efficient caching system. It was created as a learning exercise to better understand Redis and its integration with FastAPI. It includes examples of caching user and item data, as well as clearing cache entries.
 
 
 ## Table of Contents
