@@ -12,6 +12,10 @@ This project demonstrates how to integrate **Redis** with **FastAPI** to build a
     - [1. Clone the Repository](#1-clone-the-repository)
     - [2. Start the Application](#2-start-the-application)
     - [3. Verify the Setup](#3-verify-the-setup)
+    - [Connection to `docker-compose.yml`](#connection-to-docker-composeyml)
+      - [FastAPI Health Check](#fastapi-health-check)
+      - [Redis Health Check](#redis-health-check)
+    - [Summary](#summary)
   - [How It Works](#how-it-works)
     - [1. Caching with Redis](#1-caching-with-redis)
       - [Example: Caching User Data](#example-caching-user-data)
@@ -71,6 +75,48 @@ You should see the response:
 ```json
 {"status": "healthy"}
 ```
+
+This section tells you that after running `docker-compose up --build`, you can verify that the FastAPI application is running correctly by visiting the `/health` endpoint. If the application is healthy, it will return a JSON response with `{"status": "healthy"}`.
+
+### Connection to `docker-compose.yml`
+
+The `docker-compose.yml` file includes health checks for both the FastAPI application (`web` service) and the Redis service. These health checks ensure that the services are running and responsive.
+
+#### FastAPI Health Check
+```15:19:docker-compose.yml
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+```
+
+- **`test`**: This command uses `curl` to call the `/health` endpoint of the FastAPI application. If the endpoint returns a non-2xx status code, the command will fail (`exit 1`), indicating that the service is unhealthy.
+- **`interval`**: The health check runs every 30 seconds.
+- **`timeout`**: The command must complete within 10 seconds.
+- **`retries`**: If the health check fails, it will retry up to 3 times before marking the service as unhealthy.
+
+#### Redis Health Check
+```25:29:docker-compose.yml
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+```
+
+- **`test`**: This command uses `redis-cli ping` to check if the Redis server is responsive. If Redis is running, it will respond with `PONG`.
+- **`interval`**: The health check runs every 30 seconds.
+- **`timeout`**: The command must complete within 10 seconds.
+- **`retries`**: If the health check fails, it will retry up to 3 times before marking the service as unhealthy.
+
+### Summary
+
+- The `/health` endpoint in the FastAPI application is used to verify that the service is running correctly.
+- The `docker-compose.yml` file includes health checks for both the FastAPI application and Redis to ensure they are operational.
+- The `README.md` file guides users on how to manually verify the health of the application by visiting the `/health` endpoint.
+
+These health checks are crucial for maintaining the reliability of your application, especially in a containerized environment where services need to be monitored for uptime and responsiveness.
 
 ## How It Works
 
